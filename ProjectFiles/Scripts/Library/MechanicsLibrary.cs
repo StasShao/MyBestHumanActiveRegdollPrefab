@@ -192,6 +192,8 @@ namespace ShaoGameMechanicSys
         public bool isDetected { get; private set; }
         public bool isAttackable { get; private set; }
         public bool isDelay { get; private set; }
+        public bool isCanAttack { get; private set; }
+        public bool isDelayStop { get; private set; }
         public void SetDelay(bool isdelay)
         {
             isDelay = isdelay;
@@ -205,6 +207,14 @@ namespace ShaoGameMechanicSys
             detectedTarget = detectedTarg;
             isDetected = isDetect;
         }
+        public void SetCanAttack(bool canAttack = true)
+        {
+            isCanAttack = canAttack;
+        }
+        public void SetStopDelay(bool delayStop = true)
+        {
+            isDelayStop = delayStop;
+        }
         #endregion
 
         public void OnSearching(float searchDistance,float attackableDistance)
@@ -214,14 +224,16 @@ namespace ShaoGameMechanicSys
             if (_agent != null&&_iai.isDetected)
             {
                 var attackedDistance = Vector3.Distance(_rb.transform.position,_iai.detectedTarget.position);
-                if (attackedDistance <= attackableDistance) { _iai.SetAttackable(true); } else { _iai.SetAttackable(false); }
+                if (attackedDistance <= attackableDistance) { _iai.SetAttackable(true);_iai.SetStopDelay(false); } else { _iai.SetAttackable(false); _iai.SetStopDelay(true); }
                 _searcherAnimator.enabled = false;
                 _searcher.LookAt(_iai.detectedTarget.position);
             }
             if(!_iai.isDetected)
             {
+                _iai.SetStopDelay(true);
                 _searcherAnimator.enabled = true;
             }
+            
         }
         public void AiRigidbodyFollowToNavigation(float followDistance,float navStopDistance,float rotationSpeed,IBaseControllable ibaseControllable)
         {
@@ -251,7 +263,7 @@ namespace ShaoGameMechanicSys
         }
         public void OnAttackReason(Delayer delayer,AiPhysicCharacter aiChar)
         {
-            
+            if (_iai.isDelayStop) { aiChar.DelayStop(); }
             if(_iai.isAttackable)
             {
                 if(_iai.isDelay)
@@ -282,6 +294,7 @@ namespace ShaoGameMechanicSys
             return Vector3.Distance(_rb.transform.position,_navMesher.position);
         }
 
+      
     }
     public class Delayer:Courotiner
     {
@@ -296,10 +309,12 @@ namespace ShaoGameMechanicSys
         public IEnumerator OnDelaye(IAI iai)
         {
             iai.SetDelay(false);
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(4f);
             _tap = true;
+            iai.SetCanAttack(true);
             yield return new WaitForSeconds(0.01f);
             _tap = false;
+            iai.SetCanAttack(false);
             iai.SetDelay(true);
         }
     }

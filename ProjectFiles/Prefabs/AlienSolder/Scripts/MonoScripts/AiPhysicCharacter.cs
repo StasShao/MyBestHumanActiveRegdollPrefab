@@ -67,9 +67,8 @@ public class AiPhysicCharacter : AIAnimatronikCharacter
     }
     public virtual void ActionAnimationPlayer()
     {
-        /*animatronicController().PlayAnimationTrigger("Kick", Input.GetKeyDown(KeyCode.F));
-        animatronicController().PlayAnimationTrigger("Punch", Input.GetKeyDown(KeyCode.E));
-        animatronicController().PlayAnimationTrigger("LeftPunch", Input.GetKeyDown(KeyCode.Q));*/
+        animatronicController().PlayAnimationTrigger("Kick",iai().isCanAttack);
+       
     }
     public void SearchingEnemy()
     {
@@ -79,5 +78,9 @@ public class AiPhysicCharacter : AIAnimatronikCharacter
     public void DelayStart()
     {
         StartCoroutine(delayer().OnDelaye(iai()));
+    }
+    public void DelayStop()
+    {
+        StopCoroutine(delayer().OnDelaye(iai()));
     }
 }
