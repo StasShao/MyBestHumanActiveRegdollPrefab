@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace ShaoGameMechanicSys
 {
+    using UnityEngine.AI;
     public class BaseController
     {
         private Rigidbody _rb;
@@ -129,8 +130,177 @@ namespace ShaoGameMechanicSys
 
         public Inputer()
         {
-                
+            
         }
 
+    }
+    public class CameraFollower
+    {
+        private Camera _camera;
+        private Vector3 _offset;
+        private float _t;
+        public CameraFollower(Camera camera,Vector3 offset,float t)
+        {
+            _camera = camera;
+            _offset = offset;
+            _t = t;
+        }
+
+        public void FreeCameraSlerpFollow(Transform target)
+        {
+            var dir = target.position - _camera.transform.position;
+            var lookRotation = Quaternion.LookRotation(dir);
+            _camera.transform.position = Vector3.Slerp(_camera.transform.position, target.position, _t * Time.deltaTime) + _offset;
+            _camera.transform.rotation = Quaternion.Slerp(_camera.transform.rotation,lookRotation, _t * Time.deltaTime);
+        }
+        public void SetActive(bool isActive = true)
+        {
+            
+        }
+    }
+    public class AIController:IAI
+    {
+        private Rigidbody _rb;
+        private NavMeshAgent _agent;
+        private Transform _searcher;
+        private Transform _navMesher;
+        private Animator _searcherAnimator;
+        private Transform _defaultWaypoint;
+        private LayerMask _targetLayer;
+        private IAI _iai;
+        private bool _atk =true;
+        public AIController(Transform searcher,Transform transform,Transform navMesher,Transform defaultWaypoint,IAI iai,LayerMask targetLayer)
+        {
+            _searcher = searcher;
+            _iai = iai;
+            _targetLayer = targetLayer;
+            _navMesher = navMesher;
+            _defaultWaypoint = defaultWaypoint;
+            _iai.SetDelay(true);
+            _navMesher.gameObject.AddComponent<NavMeshAgent>();
+            if (_navMesher.TryGetComponent<NavMeshAgent>(out NavMeshAgent nav)) { _agent = nav; }
+            if (transform.TryGetComponent<Rigidbody>(out Rigidbody rb)) { _rb = rb; }
+            if (searcher.TryGetComponent<Animator>(out Animator anim)) { _searcherAnimator = anim; }
+        }
+        public AIController()
+        {
+
+        }
+
+        #region IAI
+        public Transform detectedTarget { get; private set; }
+        public bool isDetected { get; private set; }
+        public bool isAttackable { get; private set; }
+        public bool isDelay { get; private set; }
+        public void SetDelay(bool isdelay)
+        {
+            isDelay = isdelay;
+        }
+        public void SetAttackable(bool isAtttacked = false)
+        {
+            isAttackable = isAtttacked;
+        }
+        public void SetDetectedTarget(Transform detectedTarg, bool isDetect = false)
+        {
+            detectedTarget = detectedTarg;
+            isDetected = isDetect;
+        }
+        #endregion
+
+        public void OnSearching(float searchDistance,float attackableDistance)
+        {
+            if (EnemySearching(searchDistance, out Collider col)) { _iai.SetDetectedTarget(col.transform, true); } else { _iai.SetDetectedTarget(_defaultWaypoint, false); }
+            _agent.SetDestination(_iai.detectedTarget.position);
+            if (_agent != null&&_iai.isDetected)
+            {
+                var attackedDistance = Vector3.Distance(_rb.transform.position,_iai.detectedTarget.position);
+                if (attackedDistance <= attackableDistance) { _iai.SetAttackable(true); } else { _iai.SetAttackable(false); }
+                _searcherAnimator.enabled = false;
+                _searcher.LookAt(_iai.detectedTarget.position);
+            }
+            if(!_iai.isDetected)
+            {
+                _searcherAnimator.enabled = true;
+            }
+        }
+        public void AiRigidbodyFollowToNavigation(float followDistance,float navStopDistance,float rotationSpeed,IBaseControllable ibaseControllable)
+        {
+            var dist = MoveDistance(out Quaternion lookRotation);
+
+            #region Rigidbody move condition
+            if (dist > followDistance)
+            {
+                _rb.transform.localRotation = Quaternion.Slerp(_rb.rotation,lookRotation,rotationSpeed * Time.deltaTime);
+                ibaseControllable.SetDirection(1, 0);
+                
+            }else
+            {
+                ibaseControllable.SetDirection(0,0);
+            }
+            #endregion
+
+            #region Navigation move condition
+            if (dist > navStopDistance)
+            {
+                _agent.speed = 0;
+            }else
+            {
+                _agent.speed = 3.5f;
+            }
+            #endregion
+        }
+        public void OnAttackReason(Delayer delayer,AiPhysicCharacter aiChar)
+        {
+            
+            if(_iai.isAttackable)
+            {
+                if(_iai.isDelay)
+                {
+                    aiChar.DelayStart();
+                }
+                _atk = false;
+            }
+        }
+        private bool EnemySearching(float searchDistance,out Collider col)
+        {
+            Ray ray = new Ray(_searcher.position,_searcher.forward * searchDistance);
+            Debug.DrawRay(ray.origin, ray.direction * searchDistance, Color.red);
+            RaycastHit hit;
+            if(Physics.Raycast(ray,out hit,searchDistance,_targetLayer))
+            {
+                col = hit.collider;
+                return true;
+            }
+            col = null;
+            return false;
+        }
+        private float MoveDistance(out Quaternion lookRotationXZ)
+        {
+            var dir = _navMesher.localPosition - _rb.transform.localPosition;
+            var dirXZ = new Vector3(dir.x,0,dir.z);
+            lookRotationXZ = Quaternion.LookRotation(dirXZ);
+            return Vector3.Distance(_rb.transform.position,_navMesher.position);
+        }
+
+    }
+    public class Delayer:Courotiner
+    {
+        public Delayer(bool tap)
+        {
+            _tap = tap;
+        }
+    }
+    public abstract class Courotiner
+    {
+        protected bool _tap;
+        public IEnumerator OnDelaye(IAI iai)
+        {
+            iai.SetDelay(false);
+            yield return new WaitForSeconds(2f);
+            _tap = true;
+            yield return new WaitForSeconds(0.01f);
+            _tap = false;
+            iai.SetDelay(true);
+        }
     }
 }

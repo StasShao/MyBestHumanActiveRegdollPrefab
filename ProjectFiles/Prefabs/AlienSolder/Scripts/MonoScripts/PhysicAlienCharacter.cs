@@ -8,8 +8,13 @@ public class PhysicAlienCharacter : ActiveRegdollCharacter
     public List<Transform> AnimationTargetPartList;
     public List<ConfigurableJoint> configurableJointList;
     public List<Collider> ignoreColliderList;
+    private PhysicAnimatronicController _physicAnimatorController;
+    public void Begin()
+    {
+        _physicAnimatorController = new PhysicAnimatronicController(AnimationTargetPartList, configurableJointList, ignoreColliderList);
+    }
     public override PhysicAnimatronicController physicAnimatronicController()
     {
-        return new PhysicAnimatronicController(AnimationTargetPartList,configurableJointList, ignoreColliderList);
+        return _physicAnimatorController;
     }
 }
