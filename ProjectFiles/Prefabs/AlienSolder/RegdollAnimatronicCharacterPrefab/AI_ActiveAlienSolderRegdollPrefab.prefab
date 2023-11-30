@@ -224,7 +224,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 199647050409338392}
   serializedVersion: 4
-  m_Mass: 6.25
+  m_Mass: 3
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -330,8 +330,8 @@ ConfigurableJoint:
     useAcceleration: 0
   m_SlerpDrive:
     serializedVersion: 4
-    positionSpring: 120000
-    positionDamper: 12000
+    positionSpring: 520000
+    positionDamper: 22000
     maximumForce: 3.4028233e+38
     useAcceleration: 0
   m_ProjectionMode: 0
@@ -476,7 +476,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 356466799370827399}
   serializedVersion: 4
-  m_Mass: 6.25
+  m_Mass: 5
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -582,8 +582,8 @@ ConfigurableJoint:
     useAcceleration: 0
   m_SlerpDrive:
     serializedVersion: 4
-    positionSpring: 120000
-    positionDamper: 12000
+    positionSpring: 520000
+    positionDamper: 22000
     maximumForce: 3.4028233e+38
     useAcceleration: 0
   m_ProjectionMode: 0
@@ -1147,7 +1147,7 @@ ConfigurableJoint:
     useAcceleration: 0
   m_SlerpDrive:
     serializedVersion: 4
-    positionSpring: 200000
+    positionSpring: 250000
     positionDamper: 15000
     maximumForce: 3.4028233e+38
     useAcceleration: 0
@@ -1292,7 +1292,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1083472102172790985}
   serializedVersion: 4
-  m_Mass: 6.25
+  m_Mass: 3
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -1398,8 +1398,8 @@ ConfigurableJoint:
     useAcceleration: 0
   m_SlerpDrive:
     serializedVersion: 4
-    positionSpring: 120000
-    positionDamper: 12000
+    positionSpring: 520000
+    positionDamper: 22000
     maximumForce: 3.4028233e+38
     useAcceleration: 0
   m_ProjectionMode: 0
@@ -1583,8 +1583,8 @@ ConfigurableJoint:
     useAcceleration: 0
   m_SlerpDrive:
     serializedVersion: 4
-    positionSpring: 90000
-    positionDamper: 6000
+    positionSpring: 200
+    positionDamper: 200
     maximumForce: 3.4028233e+38
     useAcceleration: 0
   m_ProjectionMode: 0
@@ -1594,7 +1594,7 @@ ConfigurableJoint:
   m_SwapBodies: 0
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
-  m_EnableCollision: 0
+  m_EnableCollision: 1
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
@@ -1839,7 +1839,7 @@ GameObject:
   - component: {fileID: 7682246181518362083}
   - component: {fileID: 4553011086836609536}
   - component: {fileID: 7300027479626974919}
-  m_Layer: 7
+  m_Layer: 9
   m_Name: AnimatronicAlienCharacter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1876,7 +1876,7 @@ Animator:
   m_Avatar: {fileID: 9000000, guid: 36a660d4f86b59d4dafed0fd719f2c0d, type: 3}
   m_Controller: {fileID: 9100000, guid: 89acaf1555d88b9499e48ae5013e778e, type: 2}
   m_CullingMode: 0
-  m_UpdateMode: 0
+  m_UpdateMode: 1
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
@@ -1893,9 +1893,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1389906408306760973}
   serializedVersion: 4
-  m_Mass: 2
-  m_Drag: 5
-  m_AngularDrag: 100
+  m_Mass: 5
+  m_Drag: 7
+  m_AngularDrag: 300
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -2026,6 +2026,7 @@ GameObject:
   - component: {fileID: 5550492583481223199}
   - component: {fileID: 1488519832786176825}
   - component: {fileID: 3878979601362921360}
+  - component: {fileID: 104886484276311357}
   m_Layer: 0
   m_Name: mixamorig:RightLeg
   m_TagString: Untagged
@@ -2186,7 +2187,7 @@ ConfigurableJoint:
     useAcceleration: 0
   m_SlerpDrive:
     serializedVersion: 4
-    positionSpring: 200000
+    positionSpring: 250000
     positionDamper: 15000
     maximumForce: 3.4028233e+38
     useAcceleration: 0
@@ -2201,6 +2202,18 @@ ConfigurableJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!75 &104886484276311357
+ConstantForce:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1579319469265810443}
+  m_Enabled: 1
+  m_Force: {x: 0, y: -100, z: 0}
+  m_RelativeForce: {x: 0, y: 0, z: 0}
+  m_Torque: {x: 0, y: 0, z: 0}
+  m_RelativeTorque: {x: 0, y: 0, z: 0}
 --- !u!1 &1612103914791795609
 GameObject:
   m_ObjectHideFlags: 0
@@ -2772,7 +2785,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3427498204523983990}
   - component: {fileID: 6260145351605368197}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Searcher
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3137,7 +3150,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2913356110114110876}
   serializedVersion: 4
-  m_Mass: 6.25
+  m_Mass: 5
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -3243,8 +3256,8 @@ ConfigurableJoint:
     useAcceleration: 0
   m_SlerpDrive:
     serializedVersion: 4
-    positionSpring: 120000
-    positionDamper: 12000
+    positionSpring: 520000
+    positionDamper: 22000
     maximumForce: 3.4028233e+38
     useAcceleration: 0
   m_ProjectionMode: 0
@@ -3819,6 +3832,7 @@ MonoBehaviour:
   - {fileID: 9201702152376432302}
   - {fileID: 8296493700772967580}
   - {fileID: 3450263523459723088}
+  - {fileID: 5846895013098695058}
   configurableJointList:
   - {fileID: 990197726710704510}
   - {fileID: 8636600705874624706}
@@ -3832,6 +3846,7 @@ MonoBehaviour:
   - {fileID: 8382879299997466994}
   - {fileID: 8760789311252138794}
   - {fileID: 2112318120244460484}
+  - {fileID: 6847161930282710357}
   ignoreColliderList:
   - {fileID: 4553011086836609536}
   - {fileID: 393123334944304342}
@@ -3847,6 +3862,20 @@ MonoBehaviour:
   - {fileID: 4538579019573013173}
   - {fileID: 4697355064099365484}
   - {fileID: 9176215526665271325}
+  LegsJointNameGroupList:
+  - mixamorig:LeftUpLeg
+  - mixamorig:LeftLeg
+  - mixamorig:RightUpLeg
+  - mixamorig:RightLeg
+  ArmsJointNameGroupList:
+  - mixamorig:LeftShoulder
+  - mixamorig:LeftArm
+  - mixamorig:LeftForeArm
+  - mixamorig:RightShoulder
+  - mixamorig:RightArm
+  - mixamorig:RightForeArm
+  MainPivotJointHipsName: mixamorig:Hips
+  SpineJointName: mixamorig:Spine
 --- !u!1 &3974885609042129221
 GameObject:
   m_ObjectHideFlags: 0
@@ -3859,6 +3888,7 @@ GameObject:
   - component: {fileID: 3821615320484793247}
   - component: {fileID: 5254746975487171378}
   - component: {fileID: 8636600705874624706}
+  - component: {fileID: 8004197299037509189}
   m_Layer: 0
   m_Name: mixamorig:LeftLeg
   m_TagString: Untagged
@@ -4019,7 +4049,7 @@ ConfigurableJoint:
     useAcceleration: 0
   m_SlerpDrive:
     serializedVersion: 4
-    positionSpring: 200000
+    positionSpring: 250000
     positionDamper: 15000
     maximumForce: 3.4028233e+38
     useAcceleration: 0
@@ -4034,6 +4064,18 @@ ConfigurableJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!75 &8004197299037509189
+ConstantForce:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3974885609042129221}
+  m_Enabled: 1
+  m_Force: {x: 0, y: -100, z: 0}
+  m_RelativeForce: {x: 0, y: 0, z: 0}
+  m_Torque: {x: 0, y: 0, z: 0}
+  m_RelativeTorque: {x: 0, y: 0, z: 0}
 --- !u!1 &4019414251913691044
 GameObject:
   m_ObjectHideFlags: 0
@@ -4172,7 +4214,7 @@ GameObject:
   - component: {fileID: 9032527466767353324}
   - component: {fileID: 5285877018464281813}
   - component: {fileID: 5315214542750358598}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: SearcherBody
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4693,8 +4735,8 @@ ConfigurableJoint:
     useAcceleration: 0
   m_SlerpDrive:
     serializedVersion: 4
-    positionSpring: 120000
-    positionDamper: 12000
+    positionSpring: 520000
+    positionDamper: 22000
     maximumForce: 3.4028233e+38
     useAcceleration: 0
   m_ProjectionMode: 0
@@ -5159,7 +5201,7 @@ Rigidbody:
   serializedVersion: 4
   m_Mass: 50
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 1000
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -5188,7 +5230,7 @@ ConfigurableJoint:
   m_Anchor: {x: 0, y: 0, z: 0}
   m_Axis: {x: 1, y: 0, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0, y: 0, z: 0}
+  m_ConnectedAnchor: {x: -0.095990285, y: 0.72108376, z: -0.13002153}
   serializedVersion: 3
   m_SecondaryAxis: {x: 0, y: 1, z: 0}
   m_XMotion: 2
@@ -5231,19 +5273,19 @@ ConfigurableJoint:
   m_XDrive:
     serializedVersion: 4
     positionSpring: 90000
-    positionDamper: 0
+    positionDamper: 5000
     maximumForce: 3.4028233e+38
     useAcceleration: 0
   m_YDrive:
     serializedVersion: 4
     positionSpring: 90000
-    positionDamper: 0
+    positionDamper: 5000
     maximumForce: 3.4028233e+38
     useAcceleration: 0
   m_ZDrive:
     serializedVersion: 4
     positionSpring: 90000
-    positionDamper: 0
+    positionDamper: 5000
     maximumForce: 3.4028233e+38
     useAcceleration: 0
   m_TargetRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -5263,8 +5305,8 @@ ConfigurableJoint:
     useAcceleration: 0
   m_SlerpDrive:
     serializedVersion: 4
-    positionSpring: 200000
-    positionDamper: 10000
+    positionSpring: 20000
+    positionDamper: 1000
     maximumForce: 3.4028233e+38
     useAcceleration: 0
   m_ProjectionMode: 0
@@ -5641,7 +5683,7 @@ ConfigurableJoint:
     useAcceleration: 0
   m_SlerpDrive:
     serializedVersion: 4
-    positionSpring: 200000
+    positionSpring: 250000
     positionDamper: 15000
     maximumForce: 3.4028233e+38
     useAcceleration: 0
@@ -6371,8 +6413,8 @@ ConfigurableJoint:
     useAcceleration: 0
   m_SlerpDrive:
     serializedVersion: 4
-    positionSpring: 120000
-    positionDamper: 12000
+    positionSpring: 520000
+    positionDamper: 22000
     maximumForce: 3.4028233e+38
     useAcceleration: 0
   m_ProjectionMode: 0

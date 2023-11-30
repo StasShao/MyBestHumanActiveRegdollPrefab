@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace ShaoGameMechanicSys
 {
+    using Unity.Mathematics;
     using UnityEngine.AI;
     public class BaseController
     {
@@ -20,7 +21,7 @@ namespace ShaoGameMechanicSys
         public void RigidbodyMove(float force,float forwardDirection,float sideDirection)
         {
             _rb.AddForce(_rb.transform.forward * forwardDirection * force,ForceMode.Force);
-            _rb.AddForce(_rb.transform.right * sideDirection * force, ForceMode.Force);
+            _rb.AddRelativeTorque(_rb.transform.up * sideDirection  * force * 15, ForceMode.Force);
         }
     }
     public class AnimatronicController
@@ -73,8 +74,32 @@ namespace ShaoGameMechanicSys
         private List<Quaternion> _startQuaternionList = new List<Quaternion>();
         private List<Collider> _collidersA = new List<Collider>();
         private List<Collider> _collidersB = new List<Collider>();
+        private List<ConfigurableJoint> _legsJointList = new List<ConfigurableJoint>();
+        private List<ConfigurableJoint> _armsJointList = new List<ConfigurableJoint>();
+        private ConfigurableJoint _mainPivotJoint;
+        private ConfigurableJoint _spineJoint;
+
+        #region Joints parametres
+        private float _curentLegsPower;
+        private float _curentLegsDumper;
+        private float _curentArmsPower;
+        private float _curentArmsDumper;
+        private float _curentSpinePower;
+        private float _curentSpineDumper;
+        private float _curentMainHipsPower;
+        private float _curentMainHipsDumper;
+
+        private float _curentMainHipsYDrivePower;
+        private float _curentMainHipsXDrivePower;
+        private float _curentMainHipsZDrivePower;
+
+        private float _curentMainHipsYDriveDumper;
+        private float _curentMainHipsXDriveDumper;
+        private float _curentMainHipsZDriveDumper;
         #endregion
-        public PhysicAnimatronicController(List<Transform> rotationTargetList,List<ConfigurableJoint> cJointList,List<Collider> ignoreColliders)
+
+        #endregion
+        public PhysicAnimatronicController(List<Transform> rotationTargetList,List<ConfigurableJoint> cJointList,List<Collider> ignoreColliders, List<string> legsGroupNameList, List<string> armsGroupList, string mainPivotName, string spineName)
         {
             for (int i = 0; i < rotationTargetList.Count; i++)
             {
@@ -87,13 +112,33 @@ namespace ShaoGameMechanicSys
                 _collidersA.Add(ignoreColliders[i]);
                 _collidersB.Add(ignoreColliders[i]);
             }
+            JointStructures(legsGroupNameList,armsGroupList,mainPivotName,spineName);
+            _curentLegsPower = _legsJointList[0].slerpDrive.positionSpring;
+            _curentLegsDumper = _legsJointList[0].slerpDrive.positionDamper;
+            _curentArmsPower = _armsJointList[0].slerpDrive.positionSpring;
+            _curentArmsDumper = _armsJointList[0].slerpDrive.positionDamper;
+            _curentSpinePower = _spineJoint.slerpDrive.positionSpring;
+            _curentSpineDumper = _spineJoint.slerpDrive.positionDamper;
+            _curentMainHipsPower = _mainPivotJoint.slerpDrive.positionSpring;
+            _curentMainHipsDumper = _mainPivotJoint.slerpDrive.positionDamper;
+
+            _curentMainHipsXDriveDumper = _mainPivotJoint.xDrive.positionDamper;
+            _curentMainHipsYDriveDumper = _mainPivotJoint.yDrive.positionDamper;
+            _curentMainHipsZDriveDumper = _mainPivotJoint.zDrive.positionDamper;
+
+            _curentMainHipsXDrivePower = _mainPivotJoint.xDrive.positionSpring;
+            _curentMainHipsYDrivePower = _mainPivotJoint.yDrive.positionSpring;
+            _curentMainHipsZDrivePower = _mainPivotJoint.zDrive.positionSpring;
+
         }
-        public void OnJointAnimate()
+        public void OnJointAnimate(IDamage idamage,float steptoGrogi,float inGrogyJointPower,float resurectionSpeed)
         {
             for (int i = 0; i < _rotationTargetList.Count; i++)
             {
+                if (_cJointList[i] == _mainPivotJoint) continue;
                 _cJointList[i].targetRotation = Quaternion.Inverse(_rotationTargetList[i].localRotation);
             }
+            JountPowerControll(idamage,steptoGrogi,inGrogyJointPower,resurectionSpeed);
         }
         public void IgnoreMultipleCollisions(bool isIgnore = true)
         {
@@ -104,6 +149,156 @@ namespace ShaoGameMechanicSys
                     Physics.IgnoreCollision(_collidersA[i],_collidersB[j],isIgnore);
                 }
             }
+        }
+        private void JountPowerControll(IDamage idamage,float stepGrogiValue,float inGrogiJointPower,float resurectSpeed)
+        {
+            if(idamage.isLostControll)
+            {
+                foreach (var legs in _legsJointList)
+                {
+                    JointDrive jdL = legs.slerpDrive;
+                    jdL.positionDamper = 0;
+                    jdL.positionSpring = 0;
+                    legs.slerpDrive = jdL;
+                }
+                foreach (var arms in _armsJointList)
+                {
+                    JointDrive jdA = arms.slerpDrive;
+                    jdA.positionDamper = 0;
+                    jdA.positionSpring = 0;
+                    arms.slerpDrive = jdA;
+                }
+                JointDrive jd = _spineJoint.slerpDrive;
+                jd.positionDamper = 0;
+                jd.positionSpring = 0;
+                _spineJoint.slerpDrive = jd;
+                JointDrive jdHips = _mainPivotJoint.slerpDrive;
+                JointDrive jdHY = _mainPivotJoint.yDrive;
+                JointDrive jdHX = _mainPivotJoint.xDrive;
+                JointDrive jdHZ = _mainPivotJoint.zDrive;
+                jdHips.positionDamper = 0;
+                jdHips.positionSpring = 0;
+                jdHY.positionSpring = 0;
+                jdHY.positionDamper = 0;
+                jdHX.positionSpring = 0;
+                jdHX.positionDamper = 0;
+                jdHZ.positionSpring = 0;
+                jdHZ.positionDamper = 0;
+                _mainPivotJoint.yDrive = jdHY;
+                _mainPivotJoint.xDrive = jdHX;
+                _mainPivotJoint.zDrive = jdHZ;
+                _mainPivotJoint.slerpDrive= jdHips;
+                return;
+            }
+            if(idamage.damageStateValue > stepGrogiValue)
+            {
+                foreach (var legs in _legsJointList)
+                {
+                    JointDrive jdL = legs.slerpDrive;
+                    jdL.positionDamper = inGrogiJointPower/2;
+                    jdL.positionSpring = inGrogiJointPower;
+                    legs.slerpDrive = jdL;
+                }
+                foreach (var arms in _armsJointList)
+                {
+                    JointDrive jdA = arms.slerpDrive;
+                    jdA.positionDamper = inGrogiJointPower/3;
+                    jdA.positionSpring = inGrogiJointPower/2;
+                    arms.slerpDrive = jdA;
+                }
+                JointDrive jd = _spineJoint.slerpDrive;
+                jd.positionDamper = inGrogiJointPower/2;
+                jd.positionSpring = inGrogiJointPower*3;
+                _spineJoint.slerpDrive = jd;
+
+                JointDrive jdHips = _mainPivotJoint.slerpDrive;
+                jdHips.positionDamper = 1000;
+                jdHips.positionSpring = 100;
+                _mainPivotJoint.slerpDrive = jdHips;
+
+                JointDrive jdHY = _mainPivotJoint.yDrive;
+                JointDrive jdHX = _mainPivotJoint.xDrive;
+                JointDrive jdHZ = _mainPivotJoint.zDrive;
+                jdHips.positionDamper = inGrogiJointPower/2;
+                jdHips.positionSpring = inGrogiJointPower;
+                jdHY.positionSpring = inGrogiJointPower;
+                jdHY.positionDamper = inGrogiJointPower/2;
+                jdHX.positionSpring = inGrogiJointPower;
+                jdHX.positionDamper = inGrogiJointPower / 2;
+                jdHZ.positionSpring = inGrogiJointPower;
+                jdHZ.positionDamper = inGrogiJointPower/2;
+                _mainPivotJoint.yDrive = jdHY;
+                _mainPivotJoint.xDrive = jdHX;
+                _mainPivotJoint.zDrive = jdHZ;
+                return;
+            }
+            if(!idamage.isLostControll)
+            {
+                foreach (var legs in _legsJointList)
+                {
+                    JointDrive jdL = legs.slerpDrive;
+                    jdL.positionDamper = Mathf.Clamp(jdL.positionDamper + resurectSpeed, 0, _curentLegsDumper);
+                    jdL.positionSpring  = Mathf.Clamp(jdL.positionSpring + resurectSpeed, 0, _curentLegsPower);
+                    legs.slerpDrive = jdL;
+                }
+                foreach (var arms in _armsJointList)
+                {
+                    JointDrive jdA = arms.slerpDrive;
+                    jdA.positionDamper = Mathf.Clamp(jdA.positionDamper +resurectSpeed,0,_curentArmsDumper);
+                    jdA.positionSpring = Mathf.Clamp(jdA.positionSpring + resurectSpeed, 0, _curentArmsPower);
+                    arms.slerpDrive = jdA;
+                }
+                JointDrive jd = _spineJoint.slerpDrive;
+                jd.positionDamper = Mathf.Clamp(jd.positionDamper + resurectSpeed,0,_curentSpineDumper);
+                jd.positionSpring = Mathf.Clamp(jd.positionSpring + resurectSpeed, 0, _curentSpinePower);
+                _spineJoint.slerpDrive = jd;
+
+                JointDrive jdHips = _mainPivotJoint.slerpDrive;
+                JointDrive jdHY = _mainPivotJoint.yDrive;
+                JointDrive jdHX = _mainPivotJoint.xDrive;
+                JointDrive jdHZ = _mainPivotJoint.zDrive;
+                jdHips.positionDamper = Mathf.Clamp(jdHips.positionDamper + resurectSpeed,0,_curentMainHipsDumper);
+                jdHips.positionSpring = Mathf.Clamp(jdHips.positionSpring + resurectSpeed,0,_curentMainHipsPower);
+                _mainPivotJoint.slerpDrive = jdHips;
+                jdHY.positionSpring = math.clamp(jdHY.positionSpring + resurectSpeed,0,_curentMainHipsYDrivePower);
+                jdHY.positionDamper = math.clamp(jdHY.positionDamper + resurectSpeed, 0, _curentMainHipsYDriveDumper);
+                jdHX.positionSpring = math.clamp(jdHX.positionSpring + resurectSpeed, 0, _curentMainHipsXDrivePower);
+                jdHX.positionDamper = math.clamp(jdHX.positionDamper + resurectSpeed, 0, _curentMainHipsXDriveDumper);
+                jdHZ.positionSpring = math.clamp(jdHZ.positionSpring + resurectSpeed, 0, _curentMainHipsZDrivePower);
+                jdHZ.positionDamper = math.clamp(jdHZ.positionDamper + resurectSpeed, 0, _curentMainHipsZDriveDumper);
+                _mainPivotJoint.yDrive = jdHY;
+                _mainPivotJoint.xDrive = jdHX;
+                _mainPivotJoint.zDrive = jdHZ;
+            }
+        }
+        private void JointStructures(List<string> legsGroupNameList,List<string> armsGroupList,string mainPivotName,string spineName)
+        {
+            foreach (var joint in _cJointList)
+            {
+                foreach (var legName in legsGroupNameList)
+                {
+                    if(joint.gameObject.name == legName)
+                    {
+                        _legsJointList.Add(joint);
+                    }
+                }
+                foreach (var armName in armsGroupList)
+                {
+                    if (joint.gameObject.name == armName)
+                    {
+                        _armsJointList.Add(joint);
+                    }
+                }
+                if(joint.gameObject.name == mainPivotName)
+                {
+                    _mainPivotJoint = joint;
+                }
+                if (joint.gameObject.name == spineName)
+                {
+                    _spineJoint = joint;
+                }
+            }
+
         }
     }
     public class Inputer:IBaseControllable
@@ -311,7 +506,7 @@ namespace ShaoGameMechanicSys
     {
         public int Randomizer(int maxxValue)
         {
-            return Random.Range(0,maxxValue);
+            return UnityEngine.Random.Range(0,maxxValue);
         }
         protected bool _tap;
         public IEnumerator OnDelaye(IAI iai,int maxValue)

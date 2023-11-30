@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8928c59bbff9f114d917e145c6bc88bb, type: 3}
   m_Name: AIAnimatronicCharacterSettings
   m_EditorClassIdentifier: 
-  _moveForce: 71
+  _moveForce: 185
   _searchDistance: 50
   _forwardAnimationName: ForwardDirection
   _sideAnimationName: SideDirection

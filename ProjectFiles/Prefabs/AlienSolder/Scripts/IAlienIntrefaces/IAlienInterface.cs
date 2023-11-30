@@ -18,3 +18,10 @@ public interface IAI
     void SetCanAttack(bool canAttack = true);
     void SetRandomValue(int value);
 }
+public interface IDamage
+{
+    float damageStateValue { get; }
+    bool isLostControll { get; }
+    void SetControllState(bool isControll = false);
+    void SetDamage(float damage = 100.0f);
+}

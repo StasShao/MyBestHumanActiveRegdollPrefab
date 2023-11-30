@@ -13,9 +13,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         aiPhysicAlienCharacter.Begin();
-        aiPhysicAlienCharacter.physicAnimatronicController().IgnoreMultipleCollisions();
         physicAlienCharacter.Begin();
-        physicAlienCharacter.physicAnimatronicController().IgnoreMultipleCollisions();
         animatroniAlienIK.Begin();
         aiChar.Begin();
         smoothCamera.Begin();
@@ -24,12 +22,34 @@ public class GameManager : MonoBehaviour
     {
         animatroniAlienIK.AlienBehavior();
         aiChar.AlienBehavior();
-        physicAlienCharacter.physicAnimatronicController().OnJointAnimate();
         aiChar.SearchingEnemy();
-        aiPhysicAlienCharacter.physicAnimatronicController().OnJointAnimate();
+        if(Input.GetMouseButtonDown(0))
+        {
+            aiPhysicAlienCharacter.iDamage().SetDamage(200);
+            Debug.Log(aiPhysicAlienCharacter.iDamage().damageStateValue);
+        }
+        if (Input.GetMouseButtonDown(1))
+        {
+            aiPhysicAlienCharacter.iDamage().SetDamage(-500);
+            Debug.Log(aiPhysicAlienCharacter.iDamage().damageStateValue);
+        }
+        if (Input.GetKeyDown(KeyCode.L))
+        { 
+            aiPhysicAlienCharacter.iDamage().SetControllState(false);
+        }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            aiPhysicAlienCharacter.iDamage().SetControllState(true);
+        }
+
     }
     private void LateUpdate()
     {
         smoothCamera.cameraFollower().FreeCameraSlerpFollow(CamTarget);
+    }
+    private void FixedUpdate()
+    {
+        physicAlienCharacter.FixedTick();
+        aiPhysicAlienCharacter.FixedTick();
     }
 }
