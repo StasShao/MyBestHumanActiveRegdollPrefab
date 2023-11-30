@@ -5,4 +5,5 @@ using ShaoGameMechanicSys;
 public abstract class ActiveRegdollCharacter : MonoBehaviour
 {
     public abstract PhysicAnimatronicController physicAnimatronicController();
+    public abstract IDamage iDamage();
 }

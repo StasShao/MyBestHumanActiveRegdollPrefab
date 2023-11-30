@@ -4,6 +4,7 @@ using UnityEngine;
 
 public interface IAI
 {
+    int randomValue { get; }
     Transform detectedTarget { get; }
      bool isDetected { get; }
     bool isAttackable { get; }
@@ -15,4 +16,12 @@ public interface IAI
     void SetDelay(bool isdelay = true);
     void SetStopDelay(bool delayStop = true);
     void SetCanAttack(bool canAttack = true);
+    void SetRandomValue(int value);
+}
+public interface IDamage
+{
+    float damageStateValue { get; }
+    bool isLostControll { get; }
+    void SetControllState(bool isControll = false);
+    void SetDamage(float damage = 100.0f);
 }

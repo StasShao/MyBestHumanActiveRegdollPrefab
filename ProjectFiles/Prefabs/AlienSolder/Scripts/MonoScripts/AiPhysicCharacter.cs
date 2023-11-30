@@ -59,7 +59,7 @@ public class AiPhysicCharacter : AIAnimatronikCharacter
     }
     public virtual void DirectionSetter()
     {
-        aiController().AiRigidbodyFollowToNavigation(1,2,10,ibaseControllable());
+        aiController().AiRigidbodyFollowToNavigation(1,2,5,ibaseControllable());
     }
     public virtual void AnimationSinghronizator()
     {
@@ -67,8 +67,19 @@ public class AiPhysicCharacter : AIAnimatronikCharacter
     }
     public virtual void ActionAnimationPlayer()
     {
-        animatronicController().PlayAnimationTrigger("Kick",iai().isCanAttack);
-       
+        if(iai().randomValue ==0)
+        {
+            animatronicController().PlayAnimationTrigger("Kick", iai().isCanAttack);
+        }
+        if (iai().randomValue == 1)
+        {
+            animatronicController().PlayAnimationTrigger("Punch", iai().isCanAttack);
+        }
+        if (iai().randomValue == 2)
+        {
+            animatronicController().PlayAnimationTrigger("LeftPunch", iai().isCanAttack);
+        }
+
     }
     public void SearchingEnemy()
     {
@@ -77,10 +88,10 @@ public class AiPhysicCharacter : AIAnimatronikCharacter
     }
     public void DelayStart()
     {
-        StartCoroutine(delayer().OnDelaye(iai()));
+        StartCoroutine(delayer().OnDelaye(iai(),3));
     }
     public void DelayStop()
     {
-        StopCoroutine(delayer().OnDelaye(iai()));
+        StopCoroutine(delayer().OnDelaye(iai(),3));
     }
 }
