@@ -7,6 +7,7 @@ public abstract class AIAnimatronikCharacter : MonoBehaviour
     public abstract AnimatronicController animatronicController();
     public abstract AIController aiController();
     public abstract Delayer delayer();
+    public abstract IDamage iDamage();
     public abstract IAI iai();
     
 }

@@ -13,10 +13,12 @@ public class AiPhysicCharacter : AIAnimatronikCharacter
     private BaseController _baseController;
     private Delayer _delayer;
     private bool _tap;
+    private IDamage _idamage;
     public override IAI iai()
     {
         return _iai;
     }
+
     public override BaseController baseController()
     {
         return _baseController;
@@ -37,12 +39,13 @@ public class AiPhysicCharacter : AIAnimatronikCharacter
     {
         return _delayer;
     }
-    public void Begin()
+    public void Begin(PhysicAlienCharacter idamage)
     {
         _baseController = new BaseController(transform);
         _animatronikController = new AnimatronicController(GetComponent<Animator>());
         _aiComtroller = new AIController(searcher, transform, NavMesher, defaultWayPoint,iai(), Settings.TargetLayer);
         _delayer = new Delayer(_tap);
+        _idamage = idamage.GetComponent<IDamage>();
         
     }
     public virtual void AlienBehavior()
@@ -52,6 +55,7 @@ public class AiPhysicCharacter : AIAnimatronikCharacter
         DirectionSetter();
         AnimationSinghronizator();
         ActionAnimationPlayer();
+        animatronicController().SetAnimatorActive(iDamage().isLostControll);
     }
     public virtual void MoveBehavior()
     {
@@ -65,7 +69,7 @@ public class AiPhysicCharacter : AIAnimatronikCharacter
     {
         animatronicController().MoveSinghronization(ibaseControllable().forwardDirection, ibaseControllable().sideDirection, Settings.ForwardAnimationName, Settings.SideAnimationName);
     }
-    public virtual void ActionAnimationPlayer()
+    public virtual void ActionAnimationPlayer()//Переделать Enum switch case
     {
         if(iai().randomValue ==0)
         {
@@ -83,7 +87,7 @@ public class AiPhysicCharacter : AIAnimatronikCharacter
     }
     public void SearchingEnemy()
     {
-        aiController().OnSearching(Settings.SearchDistance,2);
+        aiController().OnSearching(Settings.SearchDistance,2,iDamage().isLostControll);
         aiController().OnAttackReason(delayer(),this);
     }
     public void DelayStart()
@@ -93,5 +97,10 @@ public class AiPhysicCharacter : AIAnimatronikCharacter
     public void DelayStop()
     {
         StopCoroutine(delayer().OnDelaye(iai(),3));
+    }
+
+    public override IDamage iDamage()
+    {
+        return _idamage;
     }
 }

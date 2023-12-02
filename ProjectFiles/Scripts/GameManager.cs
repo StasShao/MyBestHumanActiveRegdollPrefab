@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
         aiPhysicAlienCharacter.Begin();
         physicAlienCharacter.Begin();
         animatroniAlienIK.Begin();
-        aiChar.Begin();
+        aiChar.Begin(aiPhysicAlienCharacter);
         smoothCamera.Begin();
     }
     void Update()

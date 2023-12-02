@@ -65,6 +65,11 @@ namespace ShaoGameMechanicSys
             if (!isPlay) return;
             _animator.SetTrigger(animationTriggerName);
         }
+        public void SetAnimatorActive(bool isLostControll)
+        {
+            if (isLostControll) { _animator.enabled = false;return; }
+            _animator.enabled = true;
+        }
     }
     public class PhysicAnimatronicController
     {
@@ -133,12 +138,14 @@ namespace ShaoGameMechanicSys
         }
         public void OnJointAnimate(IDamage idamage,float steptoGrogi,float inGrogyJointPower,float resurectionSpeed)
         {
+            JountPowerControll(idamage, steptoGrogi, inGrogyJointPower, resurectionSpeed);
+            if (idamage.isLostControll) return;
             for (int i = 0; i < _rotationTargetList.Count; i++)
             {
                 if (_cJointList[i] == _mainPivotJoint) continue;
                 _cJointList[i].targetRotation = Quaternion.Inverse(_rotationTargetList[i].localRotation);
             }
-            JountPowerControll(idamage,steptoGrogi,inGrogyJointPower,resurectionSpeed);
+            
         }
         public void IgnoreMultipleCollisions(bool isIgnore = true)
         {
@@ -157,27 +164,27 @@ namespace ShaoGameMechanicSys
                 foreach (var legs in _legsJointList)
                 {
                     JointDrive jdL = legs.slerpDrive;
-                    jdL.positionDamper = 0;
-                    jdL.positionSpring = 0;
+                    jdL.positionDamper = 1000;
+                    jdL.positionSpring = 1000;
                     legs.slerpDrive = jdL;
                 }
                 foreach (var arms in _armsJointList)
                 {
                     JointDrive jdA = arms.slerpDrive;
-                    jdA.positionDamper = 0;
-                    jdA.positionSpring = 0;
+                    jdA.positionDamper = 1000;
+                    jdA.positionSpring = 1000;
                     arms.slerpDrive = jdA;
                 }
                 JointDrive jd = _spineJoint.slerpDrive;
-                jd.positionDamper = 0;
-                jd.positionSpring = 0;
+                jd.positionDamper = 1000;
+                jd.positionSpring = 1000;
                 _spineJoint.slerpDrive = jd;
                 JointDrive jdHips = _mainPivotJoint.slerpDrive;
                 JointDrive jdHY = _mainPivotJoint.yDrive;
                 JointDrive jdHX = _mainPivotJoint.xDrive;
                 JointDrive jdHZ = _mainPivotJoint.zDrive;
-                jdHips.positionDamper = 0;
-                jdHips.positionSpring = 0;
+                jdHips.positionDamper = 1000;
+                jdHips.positionSpring = 1000;
                 jdHY.positionSpring = 0;
                 jdHY.positionDamper = 0;
                 jdHX.positionSpring = 0;
@@ -363,7 +370,6 @@ namespace ShaoGameMechanicSys
         private Transform _defaultWaypoint;
         private LayerMask _targetLayer;
         private IAI _iai;
-        private bool _atk =true;
         public AIController(Transform searcher,Transform transform,Transform navMesher,Transform defaultWaypoint,IAI iai,LayerMask targetLayer)
         {
             _searcher = searcher;
@@ -417,8 +423,9 @@ namespace ShaoGameMechanicSys
         }
         #endregion
 
-        public void OnSearching(float searchDistance,float attackableDistance)
+        public void OnSearching(float searchDistance,float attackableDistance,bool lostControll)
         {
+            if (lostControll) {_agent.transform.position = _rb.transform.position; return; }
             if (EnemySearching(searchDistance, out Collider col)) { _iai.SetDetectedTarget(col.transform, true); } else { _iai.SetDetectedTarget(_defaultWaypoint, false); }
             _agent.SetDestination(_iai.detectedTarget.position);
             if (_agent != null&&_iai.isDetected)
@@ -439,7 +446,6 @@ namespace ShaoGameMechanicSys
         public void AiRigidbodyFollowToNavigation(float followDistance,float navStopDistance,float rotationSpeed,IBaseControllable ibaseControllable)
         {
             var dist = MoveDistance(out Quaternion lookRotation);
-
             #region Rigidbody move condition
             if (dist > followDistance)
             {
@@ -471,7 +477,6 @@ namespace ShaoGameMechanicSys
                 {
                     aiChar.DelayStart();
                 }
-                _atk = false;
             }
         }
         private bool EnemySearching(float searchDistance,out Collider col)
